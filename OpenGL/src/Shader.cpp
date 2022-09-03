@@ -73,10 +73,11 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
         char* message = (char*)alloca(length * sizeof(char));
         GLCall(glGetShaderInfoLog(id, length, &length, message));
 
-        std::cout << "failed to compile " <<
-            (type == GL_VERTEX_SHADER ? "vertex" : "fragment") <<
-            "shader!!!" << std::endl;
-        std::cout << message << std::endl;
+
+        std::string msg = "failed to compile ";
+        msg += (type == GL_VERTEX_SHADER ? "vertex" : "fragment");
+        msg += "shader!!!\n";
+        Log(msg+message, LOG_LEVEL_ERROR);
         GLCall(glDeleteShader(id));
 
         return 0;
@@ -112,10 +113,16 @@ void Shader::Unbind() const
     GLCall(glUseProgram(0));
 }
 
+void Shader::SetUniform1i(const std::string& name, int value)
+{
+    GLCall(glUniform1i(GetUniformLocation(name), value));
+}
+
 void Shader::SetUniform1f(const std::string& name, float value)
 {
     GLCall(glUniform1f(GetUniformLocation(name), value));
 }
+
 void Shader::SetUniform4f(const std::string& name, float r, float g, float b, float a)
 {
     GLCall(glUniform4f(GetUniformLocation(name), r,g,b,a));
@@ -139,6 +146,6 @@ int Shader::GetUniformLocation(const std::string& name)
         Log("adding uniform '" + name + "' to cache", LOG_LEVEL_WARNING);
     }
     m_UniformLocationCache[name] = location;
-    
+
     return location;
 }
