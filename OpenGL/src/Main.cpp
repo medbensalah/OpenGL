@@ -20,6 +20,14 @@
 
 using namespace MedLogger;
 
+extern "C" {
+__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+}
+
+extern "C" {
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+
 int main(void)
 {
 #pragma region Window + Context Initialization
@@ -34,7 +42,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -62,10 +70,10 @@ int main(void)
 #pragma endregion
     {
         constexpr float positions[] = {
-            -0.5f, -0.5f, 0.0f, 0.0f,
-             0.5f, -0.5f, 1.0f, 0.0f,
-             0.5f,  0.5f, 1.0f, 1.0f,
-            -0.5f,  0.5f, 0.0f, 1.0f
+            100.0f, 100.0f, 0.0f, 0.0f,
+            200.0f, 100.0f, 1.0f, 0.0f,
+            200.0f, 200.0f, 1.0f, 1.0f,
+            100.0f, 200.0f, 0.0f, 1.0f
         };
 
         unsigned int indices[] = {
@@ -86,12 +94,12 @@ int main(void)
 
         IndexBuffer ib(indices, 6);
 
-        glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);  // 4:3 aspect ratio
+        glm::mat4 projection = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
 
-        
+
         Shader shader("res/shaders/Basic.glsl");
         shader.Bind();
-    //    shader.SetUniform4f("u_Color", 0.35f, 0.1f, 0.6f, 1.0f);
+        //    shader.SetUniform4f("u_Color", 0.35f, 0.1f, 0.6f, 1.0f);
         shader.SetUniformMat4f("u_MVP", projection);
 
         Texture texture("res/textures/Example.png");
@@ -114,7 +122,7 @@ int main(void)
             renderer.Clear();
 
             shader.Bind();
-     //       shader.SetUniform4f("u_Color", r, 0.1f, 0.6f, 1.0f);
+            //       shader.SetUniform4f("u_Color", r, 0.1f, 0.6f, 1.0f);
 
             renderer.Draw(va, ib, shader);
 

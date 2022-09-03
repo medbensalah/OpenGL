@@ -1,4 +1,5 @@
 ﻿#include "Logger.h"
+#include "Localtime.h"
 #include <iostream>
 
 using namespace MedLogger;
@@ -69,13 +70,25 @@ void Logger::LogMessage(const char*& message, uint8_t level, const char* file, i
             levelName = "FATAL";
             break;
         }
-
-
-        std::cout << "\033[38;2;" << (int)m_LogLevelColors[level].r << ";" << (int)m_LogLevelColors[level].g << ";" << (int)m_LogLevelColors[level].b << "m";
-        std::cout << "[" << levelName << "] : in \"" << file << "\" in line : " << line << " : " << std::endl;
+     
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        std::string end_time = time_stamp("%T");
+        
+        std::cout << "\033[38;2;" <<
+            (int)m_LogLevelColors[level].r << ";" <<
+            (int)m_LogLevelColors[level].g << ";" <<
+            (int)m_LogLevelColors[level].b << "m";
+        
+        std::cout << "[" << levelName << "] at " << end_time <<
+            " ( elapsed time " << elapsed_seconds.count() << " s ) : in \"" <<
+            file << "\" in line : "
+            << line << " : " << std::endl;
+        
         std::cout << message << "\033[0m" << std::endl;
     }
 }
+
 void Logger::LogMessage(const std::string& message, uint8_t level, const char* file, int line)
 {
     if (level & m_LogLevel)
@@ -102,10 +115,22 @@ void Logger::LogMessage(const std::string& message, uint8_t level, const char* f
             levelName = "FATAL";
             break;
         }
-
-
-        std::cout << "\033[38;2;" << (int)m_LogLevelColors[level].r << ";" << (int)m_LogLevelColors[level].g << ";" << (int)m_LogLevelColors[level].b << "m";
-        std::cout << "[" << levelName << "] : in \"" << file << "\" in line : " << line << " : " << std::endl;
+        
+        
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        std::string end_time = time_stamp("%T");
+        
+        std::cout << "\033[38;2;" <<
+            (int)m_LogLevelColors[level].r << ";" <<
+            (int)m_LogLevelColors[level].g << ";" <<
+            (int)m_LogLevelColors[level].b << "m";
+        
+        std::cout << "[" << levelName << "] at " << end_time <<
+            " ( elapsed time " << elapsed_seconds.count() << " s ) : in \"" <<
+            file << "\" in line : "
+            << line << " : " << std::endl;
+        
         std::cout << message << "\033[0m" << std::endl;
     }
 }
