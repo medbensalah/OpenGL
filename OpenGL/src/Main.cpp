@@ -11,9 +11,12 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "Texture.h"
+
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #include "Logger.h"
-#include "Texture.h"
 
 using namespace MedLogger;
 
@@ -81,14 +84,17 @@ int main(void)
         layout.Push<float>(2);
         va.AddBuffer(vb, layout);
 
-
         IndexBuffer ib(indices, 6);
 
+        glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);  // 4:3 aspect ratio
+
+        
         Shader shader("res/shaders/Basic.glsl");
         shader.Bind();
-        shader.SetUniform4f("u_Color", 0.35f, 0.1f, 0.6f, 1.0f);
+    //    shader.SetUniform4f("u_Color", 0.35f, 0.1f, 0.6f, 1.0f);
+        shader.SetUniformMat4f("u_MVP", projection);
 
-        Texture texture("res/textures/med.png");
+        Texture texture("res/textures/Example.png");
         texture.Bind();
         shader.SetUniform1i("u_Texture", 0);
 
@@ -108,7 +114,7 @@ int main(void)
             renderer.Clear();
 
             shader.Bind();
-            shader.SetUniform4f("u_Color", r, 0.1f, 0.6f, 1.0f);
+     //       shader.SetUniform4f("u_Color", r, 0.1f, 0.6f, 1.0f);
 
             renderer.Draw(va, ib, shader);
 
