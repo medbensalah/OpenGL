@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <map>
+#include <queue>
 
 #define     LOG_LEVEL_NONE      0b0
 #define     LOG_LEVEL_DEBUG     0b1
@@ -13,9 +14,14 @@
 #define     LOG_LEVEL_FATAL     0b100000
 #define     LOG_LEVEL_ALL       0b111111
 
+#define     LOG_MODE_CONSOLE   0b1
+#define     LOG_MODE_FILE       0b10
+#define     LOG_MODE_ALL        0b11
+
 namespace MedLogger
 {
-#define     Log(message, logLevel)      Logger::GetInstance()->LogMessage(message, logLevel, __FILE__, __LINE__)
+#define     Log(message, logLevel)      Logger::GetInstance()->RequestLog(message, logLevel, __FILE__, __LINE__)
+
 
 
     static  auto start = std::chrono::system_clock::now();
@@ -27,19 +33,32 @@ namespace MedLogger
         uint8_t b;
     };
 
+    struct LogData
+    {
+        std::string message;
+        uint8_t loglevel;
+        std::string file;
+        int line;
+    };
+    
     class Logger
     {
     public:
         static Logger* GetInstance();
 
         static void SetLevel(uint8_t logLevel);
+        
+        static void SetLogMode(uint8_t logLevel, const std::string& path = "");
 
         static void SetLogLevelColor(uint8_t logLevel, uint8_t r, uint8_t g, uint8_t b);
 
-        void LogMessage(const char*& message, uint8_t level, const char* file, int line);
+        void RequestLog(const std::string& message, uint8_t logLevel, const std::string& file, int line);
 
-        void LogMessage(const std::string& message, uint8_t level, const char* file, int line);
+        void LogLoop();
 
+        void LogMessage(const std::stringstream& data);
+        void LogMessageToFile(const std::stringstream& data);
+        
     private:
         Logger();
 
@@ -47,8 +66,15 @@ namespace MedLogger
         
         static Logger* m_instance;
 
+        std::string m_filePath;
+        
+        bool m_isFinished = false;
+        
+        std::queue<LogData> m_LogsQueue;
+        
         std::map<uint8_t, RGB> m_LogLevelColors;
 
         uint8_t m_LogLevel;
+        uint8_t m_LogMode;
     };
 }
